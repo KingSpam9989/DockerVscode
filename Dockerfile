@@ -8,19 +8,18 @@ RUN apt update && apt install -y \
     && apt clean
 
 # Tạo user vscode có quyền sudo
-RUN useradd -m vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN useradd -m -s /bin/bash vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Cài code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 # Cấu hình code-server
+USER vscode
 RUN mkdir -p /home/vscode/.config/code-server
 COPY --chown=vscode:vscode config.yaml /home/vscode/.config/code-server/config.yaml
 
 EXPOSE 8080
 
-# Chạy với user vscode
-USER vscode
 WORKDIR /home/vscode
 
 CMD ["code-server"]
